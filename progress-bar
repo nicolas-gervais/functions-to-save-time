@@ -1,0 +1,18 @@
+from time import time, sleep
+
+start = time()
+
+def progress_bar(progress, total):
+    '''takes a number of ops completed, and number of ops total as arguments'''
+    
+    percentage = int((progress*100)/total)
+    init_space = ' '*(3 -len(str(percentage)))
+    bars = '='*min(29, int((percentage/100)*30) )+ '>' + '-'*(29-int((percentage/100)*30))
+    elapsed_time = int(time()-start)
+    print('\r', '{}{}% [{}] - Elapsed: {}s'.format(0,
+                                    percentage, bars, elapsed_time), end='')
+    if progress==(total-1):
+        print('\r', '{}{}% [{}] - Elapsed: {}s'.format('', 100, '='*30, elapsed_time), end='')
+        
+#  14% [====>-------------------------] - Elapsed: 14s
+# 100% [==============================] - Elapsed: 61s
