@@ -3,7 +3,7 @@ from time import time, sleep
 start = time()
 
 def progress_bar(progress, total):
-    '''takes a number of ops completed, and number of ops total as arguments'''
+    """takes a number of ops completed, and number of ops total as arguments"""
     
     percentage = int((progress*100)/total)
     init_space = ' '*(3 -len(str(percentage)))
