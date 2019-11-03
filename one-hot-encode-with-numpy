@@ -1,12 +1,12 @@
 import numpy as np
 
-target = np.array(['dog', 'dog', 'cat', 'cat', 'cat', 'dog', 'dog', 
+target = np.array(['dog', 'dog', 'cat', 'cat', 'cat', 'dog', 'dog',
     'cat', 'cat', 'hamster', 'hamster'])
 
 def one_hot(array):
     words, counts = np.unique(array, return_counts=True)
-    array = [np.where(i == words)[0][0] for i in array]
+    array = np.searchsorted(words, array)
     onehot = np.eye(counts.shape[0])[np.array(array)]
-    return onehot 
+    return onehot
 
 one_hot(target)
