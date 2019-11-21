@@ -5,3 +5,17 @@ def fetch(page, addition=''):
     return bs.BeautifulSoup(urlopen(Request(page + addition,
             headers={'User-Agent': 'Opera/9.80 (X11; Linux i686; Ub'\
                      'untu/14.10) Presto/2.12.388 Version/12.16'})).read(), 'lxml')
+                     
+## Alternatively
+
+import bs4 as bs
+from urllib.request import Request, urlopen
+
+def fetch(page, addition='', timeout=10):
+    headers = {'User-Agent': 'Opera/9.80 (X11; Linux i686; Ub'
+               'untu/14.10) Presto/2.12.388 Version/12.16'}
+    req = Request(url=page + addition, headers=headers)
+    open_url = urlopen(url=req, timeout=timeout)
+    read = open_url.read()
+    soup = bs.BeautifulSoup(markup=read, parser='lxml')
+    return soup
