@@ -1,0 +1,16 @@
+import pandas as pd
+import numpy as np
+
+df = pd.DataFrame({'Name':['Mark', 'Laura', 'Adam', 'Roger', 'Anna'],
+                   'City':['Lisbon', 'Montreal', 'Lisbon', 'Berlin', 'Glasgow'],
+                   'Height':[173.4, 151.8, 179.3, 169.1, 166.4],
+                   'Happy':['Yes', 'No', 'Yes', 'Yes', 'No'],
+                   'Car':['Tesla', 'Audi', 'Porsche', 'Ford', 'Honda']})
+                   
+# Out[19]: 
+#   Name      City  Height Happy      Car
+# 0   Mark    Lisbon   173.4   Yes    Tesla
+# 1  Laura  Montreal   151.8    No     Audi
+# 2   Adam    Lisbon   179.3   Yes  Porsche
+# 3  Roger    Berlin   169.1   Yes     Ford
+# 4   Anna   Glasgow   166.4    No    Honda
