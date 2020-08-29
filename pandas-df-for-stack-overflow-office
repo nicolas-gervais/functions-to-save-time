@@ -1,0 +1,13 @@
+import pandas as pd
+
+df = pd.DataFrame(
+    index=['Jim', 'Michael', 'Pam', 'Oscar', 'Angela', 'Dwight', 'Erin', 'Toby', 'Holly', 'Kevin'],
+    data={
+        'department': ['sales', 'management', 'reception', 'accounting', 'accounting',
+                       'sales', 'reception', 'hr', 'hr', 'accounting'],
+        'sex': ['male', 'male', 'female', 'male', 'female', 'male', 'female',
+                'male', 'female', 'male'],
+        'senior': ['yes', 'yes', 'no', 'no', 'yes', 'yes', 'no', 'yes', 'yes', 'no'],
+        'height': [1.91, 1.75, 1.68, 1.75, 1.55, 1.89, 1.65, 1.77, 1.62, 1.85],
+        'age': [40, 58, 46, 61, 49, 54, 40, 53, 52, 47],
+        'quits': [1, 1, 1, 0, 0, 1, 1, 1, 0, 0]})
