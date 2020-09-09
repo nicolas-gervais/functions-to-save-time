@@ -1,68 +1,39 @@
-import os
-os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
-import pandas as pd
-from tensorflow import keras
-from tensorflow.keras import layers
-import tensorflow as tf
-from tensorflow import feature_column
+train_image_dir = r'C:\Users\nicol\Documents\dobble\dobblecards'
+train_annot_dir = r'C:\Users\nicol\Documents\dobble\absoluteannot'
+train_images_np = []
+gt_boxes = []
+labels = []
 
-df_train = pd.DataFrame(
-    index=['Jim', 'Michael', 'Pam', 'Oscar', 'Angela', 'Dwight', 'Erin', 'Toby', 'Holly', 'Kevin'],
-    data={
-        'department': ['sales', 'management', 'reception', 'accounting', 'accounting',
-                       'sales', 'reception', 'hr', 'hr', 'accounting'],
-        'sex': ['male', 'male', 'female', 'male', 'female', 'male', 'female',
-                'male', 'female', 'male'],
-        'senior': ['yes', 'yes', 'no', 'no', 'yes', 'yes', 'no', 'yes', 'yes', 'no'],
-        'height': [1.91, 1.75, 1.68, 1.75, 1.55, 1.89, 1.65, 1.77, 1.62, 1.85],
-        'age': [40, 58, 46, 61, 49, 54, 40, 53, 52, 47],
-        'quits': [1, 1, 1, 0, 0, 1, 1, 1, 0, 0]})
+list_files = os.listdir(train_image_dir)
 
+for i in range(0, len(list_files)): # formerly list_files[:10]
+    image_path = os.path.join(train_image_dir, list_files[i])
+    train_images_np.append(load_image_into_numpy_array(image_path)) 
+    
+    annot_path = image_path.replace('dobblecards', 'absoluteannot').replace('jpg', 'txt') # [y_min, x_min, y_max, x_max]
+    annotations = []
+    labels_temp = []
+    with open(annot_path) as txtfile:
+        reader = csv.reader(txtfile, delimiter=',')
+        for row in reader:
+            annotations.append(list(map(float, [float(row[1]) /720    , 
+                                                ((float(row[2]) - (1280 - 720)//2  ))/720    , 
+                                                float(row[3])     /720 , 
+                                                ((float(row[4])  - (1280 - 720)//2    )) /720   ])))
+            labels_temp.append(int(float(row[0])))
+        txtfile.close()
+    gt_boxes.append(np.array(annotations))
+    labels.append(np.array(labels_temp))
+    print(f'\r{i/(len(list_files)-3):.2%}', end='')
 
-def df_to_dataset(dataframe, shuffle=True, batch_size=32):
-  dataframe = dataframe.copy()
-  labels = dataframe.pop('quits')
-  ds = tf.data.Dataset.from_tensor_slices((dict(dataframe), labels))
-  if shuffle:
-    ds = ds.shuffle(buffer_size=len(dataframe))
-  ds = ds.batch(batch_size)
-  return ds
+dummy_scores = np.full(shape=(8), fill_value=1., dtype=np.float32)  
 
-batch_size = 32
-train_ds = df_to_dataset(df_train, batch_size=batch_size)
-# val_ds = df_to_dataset(df_validation, shuffle=False, batch_size=batch_size)
-# df_test['SalePrice'] = 0
-# test_ds = df_to_dataset(df_test, shuffle=False, batch_size=batch_size)
-
-numericColumns = ['age', 'height']
-categoricalColumns = ['department', 'sex', 'senior']
-
-feature_columns = []
-
-for col in numericColumns:
-  col = feature_column.numeric_column(col)
-  feature_columns.append(col)
-
-for col in categoricalColumns:
-  col = feature_column.indicator_column(feature_column.categorical_column_with_vocabulary_list(col,df_train[col].unique()))
-  feature_columns.append(col)
-
-feature_layer = tf.keras.layers.DenseFeatures(feature_columns)
-
-
-def build_model():
-  model = keras.Sequential([
-    feature_layer,
-    layers.Dense(10, activation='relu'),
-    layers.Dense(10, activation='relu'),
-    layers.Dense(1)
-  ])
-
-  optimizer = tf.optimizers.RMSprop()
-
-  model.compile(loss='mse', optimizer=optimizer, metrics=['mse'])
-  return model
-
-model = build_model()
-
-history = model.fit(train_ds, epochs=30)
+plt.figure(figsize=(20, 20))
+for idx in range(2):
+    plt.subplot(2, 1, idx+1)
+    plot_detections(
+      train_images_np[idx],
+      gt_boxes[idx],
+      labels[idx].astype(np.int32),
+      dummy_scores, category_index)
+plt.show()
